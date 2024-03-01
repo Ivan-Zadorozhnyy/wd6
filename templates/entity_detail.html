@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-
-{% block content %}
-    <h1>{{ entity.name }}</h1>
-    <p>{{ entity.description }}</p>
-    <a href="{% url 'entity_image' id=entity.id %}">View Image</a>
-    <br>
-    <a href="{% url 'main_page' %}">Back to main page</a>
-{% endblock %}

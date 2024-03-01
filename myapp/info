@@ -1,0 +1,16 @@
+## Get All Users
+**GET** `/users/`
+
+## Get One User by ID
+**GET** `/users/{id}/`
+
+## Create a New User
+**POST** `/users/`
+```json
+{
+  "username": "johndoe",
+  "email": "johndoe@example.com",
+  "first_name": "John",
+  "last_name": "Doe",
+  "is_admin": false
+}
