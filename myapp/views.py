@@ -1,3 +1,4 @@
+import json
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseNotAllowed
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -86,16 +87,18 @@ class UserListCreate(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def perform_create(self, serializer):
+    async def perform_create(self, serializer):
         serializer.save()
         channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            "notifications",
-            {
+        #async_to_sync(channel_layer.group_send)(
+
+        await self.send(text_data=json.dumps({
+            "type": "MESSAGE",
+            "data": {
                 "type": "user_notification",
                 "message": {"detail": "New user created!", "user_data": serializer.data}
             }
-        )
+        }))
 
 class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
