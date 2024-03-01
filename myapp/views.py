@@ -9,6 +9,9 @@ from .helpers.cookie_helper import set_cookie, get_cookie
 from .helpers.header_helper import set_header, get_header
 from rest_framework import generics
 from .serializers import UserSerializer
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 
 @csrf_exempt
 def main_page(request):
@@ -82,6 +85,17 @@ def get_header_view(request, name):
 class UserListCreate(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "notifications",
+            {
+                "type": "user_notification",
+                "message": {"detail": "New user created!", "user_data": serializer.data}
+            }
+        )
 
 class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()

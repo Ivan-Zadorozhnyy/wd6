@@ -1,0 +1,14 @@
+<script>
+    const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const ws_path = ws_scheme + '://' + window.location.host + "8001:/ws/notifications/";
+    const ws = new WebSocket(ws_path);
+
+    ws.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        // Append the message to the notifications div
+        const notifications = document.getElementById('notifications');
+        const messageElement = document.createElement('p');
+        messageElement.textContent = 'New notification: ' + data.message;
+        notifications.appendChild(messageElement);
+    };
+</script>
